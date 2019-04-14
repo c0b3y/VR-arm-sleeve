@@ -22,8 +22,6 @@ LSM9DS1 imu;
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_CALCULATED
-//#define PRINT_RAW
 #define PRINT_SPEED 250 // 250 ms between prints
 static unsigned long lastPrint = 0; // Keep track of print time
 
@@ -31,9 +29,9 @@ static unsigned long lastPrint = 0; // Keep track of print time
 // a declination to get a more accurate heading. Calculate
 // your's here:
 // http://www.ngdc.noaa.gov/geomag-web/#declination
-#define DECLINATION -8.58 // Declination (degrees) in Boulder, CO.
+#define DECLINATION -11.50 // Declination (degrees) in Boulder, CO.
 
-static unsigned long
+/*static unsigned long
 millis (void)
 {
     long            ms; // Milliseconds
@@ -51,22 +49,18 @@ millis (void)
     return ms;
 }
 
-
+*/
 
 void printGyro()
 {
     // Now we can use the gx, gy, and gz variables as we please.
     // Either print them as raw ADC values, or calculated in DPS.
     printf("G: ");
-    #ifdef PRINT_CALCULATED
     // If you want to print calculated values, you can use the
     // calcGyro helper function to convert a raw ADC value to
     // DPS. Give the function the value that you want to convert.
-        printf("%.2f, %.2f, %.2f", imu.calcGyro(imu.gx), imu.calcGyro(imu.gy), imu.calcGyro(imu.gz));
-        printf(" deg/s\n");
-    #elif defined PRINT_RAW
-         printf("%.2f, %.2f, %.2f\n", imu.gx, imu.gy, imu.gz);
-    #endif
+    printf("%.2f, %.2f, %.2f", imu.calcGyro(imu.gx), imu.calcGyro(imu.gy), imu.calcGyro(imu.gz));
+    printf(" deg/s\n");
 }
 
 void printAccel()
@@ -74,16 +68,11 @@ void printAccel()
     // Now we can use the ax, ay, and az variables as we please.
     // Either print them as raw ADC values, or calculated in g's.
     printf("A: ");
-    #ifdef PRINT_CALCULATED
     // If you want to print calculated values, you can use the
     // calcAccel helper function to convert a raw ADC value to
     // g's. Give the function the value that you want to convert.
-        printf("%.2f, %.2f, %.2f", imu.calcGyro(imu.ax), imu.calcGyro(imu.ay), imu.calcGyro(imu.az));
-        printf(" g\n");
-    #elif defined PRINT_RAW
-        printf("%.2f, %.2f, %.2f\n", imu.ax, imu.ay, imu.az);
-    #endif
-
+    printf("%.2f, %.2f, %.2f", imu.calcAccel(imu.ax), imu.calcAccel(imu.ay), imu.calcAccel(imu.az));
+    printf(" g\n");
 }
 
 void printMag()
@@ -91,15 +80,11 @@ void printMag()
     // Now we can use the mx, my, and mz variables as we please.
     // Either print them as raw ADC values, or calculated in Gauss.
     printf("M: ");
-    #ifdef PRINT_CALCULATED
     // If you want to print calculated values, you can use the
     // calcMag helper function to convert a raw ADC value to
     // Gauss. Give the function the value that you want to convert.
-        printf("%.2f, %.2f, %.2f", imu.calcGyro(imu.mx), imu.calcGyro(imu.my), imu.calcGyro(imu.mz));
-        printf(" gauss\n");
-    #elif defined PRINT_RAW
-        printf("%.2f, %.2f, %.2f\n", imu.mx, imu.my, imu.mz);
-    #endif
+    printf("%.2f, %.2f, %.2f", imu.calcMag(imu.mx), imu.calcMag(imu.my), imu.calcMag(imu.mz));
+    printf(" gauss\n");
 }
 
 void printAttitude(float ax, float ay, float az, float mx, float my, float mz)
@@ -123,11 +108,12 @@ void printAttitude(float ax, float ay, float az, float mx, float my, float mz)
     pitch *= 180.0 / PI;
     roll  *= 180.0 / PI;
 
-    printf("Pitch, Roll: %.2f, %.2f; Heading: .2f\n", pitch, roll, heading);
+    printf("Pitch, Roll: %.2f, %.2f; Heading: %.2f\n", pitch, roll, heading);
 }
 
 int main() {
     //LSM9DS1 imu(IMU_MODE_I2C, 0x6B, 0x1E, 1);
+    int count = 0;
 
     imu.settings.device.commInterface = IMU_MODE_I2C;
     imu.settings.device.mAddress = LSM9DS1_M;
@@ -137,10 +123,10 @@ int main() {
         printf("Failed to communicate with LSM9DS1.\n");
         printf("Double-check wiring.\n");
         printf("Default settings in this sketch will work for an out of the box LSM9DS1 Breakout, but may need to be modified if the board jumpers are.\n");
-        while (1);
     }
 
     while(1){
+        //count++;
         if ( imu.gyroAvailable() ){
         // To read from the gyroscope,  first call the
         // readGyro() function. When it exits, it'll update the
@@ -159,7 +145,14 @@ int main() {
         // mx, my, and mz variables with the most current data.
             imu.readMag();
         }
+        printGyro();
+        printAccel();
+        printMag();
+        printAttitude(imu.ax, imu.ay, imu.az, -imu.my, -imu.mx, imu.mz);
+        printf("\n");
 
+
+        /*
         if ((lastPrint + PRINT_SPEED) < millis()){
             printGyro();  // Print "G: gx, gy, gz"
             printAccel(); // Print "A: ax, ay, az"
@@ -173,5 +166,6 @@ int main() {
             printf("\n");
             lastPrint = millis(); // Update lastPrint time
         }
+        */
     }
 }
