@@ -1,4 +1,5 @@
 SparkFunLSM9DS1.cpp
+
 /******************************************************************************
 SFE_LSM9DS1.cpp
 SFE_LSM9DS1 Library Source File
@@ -53,16 +54,17 @@ Distributed as-is; no warranty is given.
 #define SENSITIVITY_MAGNETOMETER_16  0.00058
 #define MAX_BUS 64
 char dataBuffer[0x80];
+/*
 LSM9DS1::LSM9DS1()
 {
         init(IMU_MODE_I2C, 0x6B, 0x1E, 1);
 }
-/*
-LSM9DS1::LSM9DS1(interface_mode interface, uint8_t xgAddr, uint8_t mAddr, uint8_t bus)
-{
-        init(interface, xgAddr, mAddr, bus);
-}
 */
+LSM9DS1::LSM9DS1(uint8_t xgAddr, uint8_t mAddr, uint8_t bus)
+{
+        init(IMU_MODE_I2C, xgAddr, mAddr, bus);
+}
+
 void LSM9DS1::init(interface_mode interface, uint8_t xgAddr, uint8_t mAddr, uint8_t bus)
 {
         settings.device.commInterface = interface;
@@ -391,8 +393,9 @@ void LSM9DS1::calibrateMag(bool loadIn)
                 while (!magAvailable())
                         ;
                 readMag();
-                int16_t magTemp[3] = {0, 0, 0};
-                magTemp[0] = mx;
+                int16_t magTemp[3][  379.005877] CFG80211-ERROR) wl_notify_scan_status :  = {0, 0, 0};
+                magTemp[0] = mxscan is not ready
+;
                 magTemp[1] = my;
                 magTemp[2] = mz;
                 for (j = 0; j < 3; j++)
